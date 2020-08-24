@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 28
     buildToolsVersion "30.0.1"
     defaultConfig {
         applicationId "com.example.gradlepluginmodule"
@@ -34,4 +34,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation project(":base")
     implementation project(":mylibrary")
+    implementation project(":moduleplugin")
 }

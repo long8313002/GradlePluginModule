@@ -1,4 +1,4 @@
-package com.zz.myapplication;
+package com.mb.moduleplugin;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;

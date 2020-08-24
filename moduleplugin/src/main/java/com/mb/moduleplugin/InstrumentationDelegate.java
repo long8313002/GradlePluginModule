@@ -1,4 +1,4 @@
-package com.zz.myapplication;
+package com.mb.moduleplugin;
 
 import android.app.Activity;
 import android.app.Application;
@@ -191,18 +191,20 @@ public class InstrumentationDelegate extends Instrumentation {
 
             Activity activity;
             try {
-                replaceClassLoader( packageContext.getClassLoader().loadClass(className),packageContext,cl);
-                activity = mProxy.newActivity(packageContext.getClassLoader(), className, intent);
-                Field mResources = ContextThemeWrapper.class.getDeclaredField("mResources");
-                mResources.setAccessible(true);
-                mResources.set(activity, new ResourcesProxy(context.getResources(), packageContext.getResources()));
+                activity = mProxy.newActivity(cl, className, intent);
+
+                if(activity.getClass().getClassLoader()!=cl){
+                    Field mResources = ContextThemeWrapper.class.getDeclaredField("mResources");
+                    mResources.setAccessible(true);
+                    mResources.set(activity, new ResourcesProxy(context.getResources(), packageContext.getResources()));
+
+                }
 
 
-                Field mTheme = ContextThemeWrapper.class.getDeclaredField("mTheme");
-                mTheme.setAccessible(true);
-                mTheme.set(activity, packageContext.getTheme());
+//                Field mTheme = ContextThemeWrapper.class.getDeclaredField("mTheme");
+//                mTheme.setAccessible(true);
+//                mTheme.set(activity, packageContext.getTheme());
 
-                replaceClassLoader(activity.getClass(), packageContext, cl);
             } catch (Exception e) {
                 activity = mProxy.newActivity(cl, className, intent);
             }
@@ -213,78 +215,6 @@ public class InstrumentationDelegate extends Instrumentation {
 
 
         return mProxy.newActivity(cl, className, intent);
-    }
-
-
-    private void replaceClassLoader(final Class aClass, final Context packageContext, final ClassLoader superCl) {
-
-        if (aClass.getClassLoader().getClass().getSimpleName().startsWith("Boot")) {
-            return;
-        }
-
-        try {
-
-            final Field classLoader = Class.class.getDeclaredField("classLoader");
-            classLoader.setAccessible(true);
-
-            classLoader.set(aClass, new ClassLoader() {
-                @Override
-                public Class<?> loadClass(String name) throws ClassNotFoundException {
-
-                    Class<?> superClass = superCl.loadClass(name);
-
-                    try {
-
-                        Class clazz = packageContext.getClassLoader().loadClass(name);
-
-                        long superSize = getObjectSize(superClass);
-                        long currentSize = getObjectSize(clazz);
-                        Log.e("ZZZZZZZ", clazz.getSimpleName() + "==》" + superSize + " | " + currentSize);
-                        if (superSize == currentSize) {
-                            replaceClassLoader(superClass, packageContext, superCl);
-                            return superClass;
-                        }
-                        replaceClassLoader(clazz, packageContext, superCl);
-                        return clazz;
-                    } catch (Exception e) {
-                        replaceClassLoader(superClass, packageContext, superCl);
-                        return superClass;
-                    }
-
-                }
-
-                @Override
-                protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                    return super.loadClass(name, resolve);
-                }
-
-                @Override
-                protected Class<?> findClass(String name) throws ClassNotFoundException {
-                    return super.findClass(name);
-                }
-            });
-
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private long getObjectSize(Class obj) {
-
-        try {
-            Field classSize = Class.class.getDeclaredField("objectSize");
-            classSize.setAccessible(true);
-            return (int) classSize.get(obj);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-
-        return 0;
     }
 
 

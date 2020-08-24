@@ -1,2 +1,2 @@
-include ':app', ':base', ':mylibrary'
+include ':app', ':base', ':mylibrary', ':moduleplugin'
 rootProject.name='GradlePluginModule'
