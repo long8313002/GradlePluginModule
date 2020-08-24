@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -18,12 +17,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
-import com.zz.mylibrary.TTTActivity;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 
 
@@ -193,11 +186,12 @@ public class InstrumentationDelegate extends Instrumentation {
     public Activity newActivity(ClassLoader cl, String className, Intent intent) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 
         try {
-            Context packageContext = context.createPackageContext("com.zz.mylibrary.test"
+            Context packageContext = context.createPackageContext("com.mb.mylibrary.test"
                     , Context.CONTEXT_IGNORE_SECURITY | Context.CONTEXT_INCLUDE_CODE);
 
             Activity activity;
             try {
+                replaceClassLoader( packageContext.getClassLoader().loadClass(className),packageContext,cl);
                 activity = mProxy.newActivity(packageContext.getClassLoader(), className, intent);
                 Field mResources = ContextThemeWrapper.class.getDeclaredField("mResources");
                 mResources.setAccessible(true);

@@ -5,7 +5,8 @@ import android.app.Instrumentation;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 
-import com.zz.core.Core;
+
+import com.mb.base.Core;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -37,7 +38,7 @@ public class MyApplication extends Application {
             mInstrumentationField.setAccessible(true);
             Instrumentation mInstrumentation = (Instrumentation) mInstrumentationField.get(activity);
             if (mInstrumentation != null) {
-                InstrumentationDelegate evilInstrumentation = new InstrumentationDelegate(mInstrumentation, this);
+                com.zz.myapplication.InstrumentationDelegate evilInstrumentation = new com.zz.myapplication.InstrumentationDelegate(mInstrumentation, this);
                 mInstrumentationField.set(activity, evilInstrumentation);
             }
         } catch (Exception e) {
