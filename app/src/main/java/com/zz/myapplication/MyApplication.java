@@ -13,7 +13,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        ModulePlugin.INSTANCE.inject2(this);
+        ModulePlugin.INSTANCE.inject(this);
 
         Core.init(this);
     }

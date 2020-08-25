@@ -223,7 +223,7 @@ public class InstrumentationDelegate extends Instrumentation {
 
     private Field getField(Class clazz, String fieldName) {
         try {
-            Method getDeclaredField = Class.class.getDeclaredMethod("getDeclaredField");
+            Method getDeclaredField = Class.class.getDeclaredMethod("getDeclaredField",String.class);
             getDeclaredField.setAccessible(true);
             return (Field) getDeclaredField.invoke(clazz, fieldName);
         } catch (NoSuchMethodException e) {

@@ -4,11 +4,9 @@ import android.app.Instrumentation
 import android.content.Context
 
 object ModulePlugin {
-    fun inject(context: Context) {
-        replaceActivityInstrumentationService(context)
-    }
 
-    fun inject2(context: Context) {
+
+    fun inject(context: Context) {
         replaceActivityInstrumentationService(context)
 
         val packageContext: Context = context.createPackageContext(
