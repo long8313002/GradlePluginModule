@@ -18,6 +18,8 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 
 public class InstrumentationDelegate extends Instrumentation {
@@ -193,17 +195,19 @@ public class InstrumentationDelegate extends Instrumentation {
             try {
                 activity = mProxy.newActivity(cl, className, intent);
 
-                if(activity.getClass().getClassLoader()!=cl){
-                    Field mResources = ContextThemeWrapper.class.getDeclaredField("mResources");
-                    mResources.setAccessible(true);
-                    mResources.set(activity, new ResourcesProxy(context.getResources(), packageContext.getResources()));
-
+                if (activity.getClass().getClassLoader() != cl) {
+                    Field mResources = getField(ContextThemeWrapper.class, "mResources");
+                    if(mResources!=null){
+                        mResources.setAccessible(true);
+                        mResources.set(activity, new ResourcesProxy(context.getResources(), packageContext.getResources()));
+                    }
                 }
 
-
-//                Field mTheme = ContextThemeWrapper.class.getDeclaredField("mTheme");
-//                mTheme.setAccessible(true);
-//                mTheme.set(activity, packageContext.getTheme());
+                Field mTheme = getField(ContextThemeWrapper.class, "mTheme");
+                if(mTheme!=null){
+                    mTheme.setAccessible(true);
+                    mTheme.set(activity, packageContext.getTheme());
+                }
 
             } catch (Exception e) {
                 activity = mProxy.newActivity(cl, className, intent);
@@ -215,6 +219,21 @@ public class InstrumentationDelegate extends Instrumentation {
 
 
         return mProxy.newActivity(cl, className, intent);
+    }
+
+    private Field getField(Class clazz, String fieldName) {
+        try {
+            Method getDeclaredField = Class.class.getDeclaredMethod("getDeclaredField");
+            getDeclaredField.setAccessible(true);
+            return (Field) getDeclaredField.invoke(clazz, fieldName);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

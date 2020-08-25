@@ -8,10 +8,7 @@ class TestActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ac_test)
-        toast("777777")
+        toast("000000")
     }
 
-    public fun getString():String{
-        return "555555"
-    }
 }
